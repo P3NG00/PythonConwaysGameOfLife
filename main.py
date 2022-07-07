@@ -84,9 +84,11 @@ while running:
                         mouse_pos = pygame.mouse.get_pos()
                         mouse_pos = (int(mouse_pos[0] / UNIT_SIZE),
                                      int(mouse_pos[1] / UNIT_SIZE))
-                        mouse_unit = unit_array[(mouse_pos[1] * UNIT_ARRAY_SQUARE_SIZE) + mouse_pos[0]]
-                        mouse_unit.active = not mouse_unit.active
-                        dirty_array.append(mouse_unit)
+                        if mouse_pos[0] < UNIT_ARRAY_SQUARE_SIZE and \
+                           mouse_pos[1] < UNIT_ARRAY_SQUARE_SIZE:
+                            mouse_unit = unit_array[(mouse_pos[1] * UNIT_ARRAY_SQUARE_SIZE) + mouse_pos[0]]
+                            mouse_unit.active = not mouse_unit.active
+                            dirty_array.append(mouse_unit)
 
             case pygame.VIDEORESIZE:
 
