@@ -64,7 +64,7 @@ draw_mode = True
 # create surface
 pygame.init()
 pygame.display.set_caption(WINDOW_TITLE)
-surface = pygame.display.set_mode(surface_size, pygame.RESIZABLE)
+surface = pygame.display.set_mode(surface_size)
 redraw_all()
 
 
@@ -125,12 +125,6 @@ while running:
                                 mouse_unit = unit_array[(mouse_pos[1] * UNIT_ARRAY_SQUARE_SIZE) + mouse_pos[0]]
                                 mouse_unit.active = not mouse_unit.active
                                 dirty_array.append(mouse_unit)
-
-            case pygame.VIDEORESIZE:
-
-                # update surface size
-                surface_size = (event.w, event.h)
-                redraw_all()
 
     # draw
     if len(dirty_array) != 0:
