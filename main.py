@@ -175,7 +175,7 @@ while running:
                         # step through one unit update
                         update_units()
 
-                    case pygame.K_RETURN:
+                    case pygame.K_RETURN | pygame.K_KP_ENTER:
 
                         # toggle simulation
                         simulating = not simulating
