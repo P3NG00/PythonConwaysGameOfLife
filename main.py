@@ -12,6 +12,7 @@ FPS = 65.0
 COLOR_BG = Color(64, 64, 64)
 COLOR_UNIT_INACTIVE = Color(0, 0, 0)
 COLOR_UNIT_ACTIVE = Color(255, 255, 255)
+SAVE_FILE = "save.json"
 SIMULATION_TIMER_SECONDS = 0.25
 UNIT_ARRAY_SQUARE_SIZE = 50
 UNIT_SIZE = 14
@@ -38,7 +39,7 @@ class Unit:
 
     def __init__(self, position: Vector2):
         self.active = False
-        self.active_last = self.active
+        self.active_last = False
         self.position = position
 
     def draw(self, surface: Surface) -> None:
@@ -102,13 +103,13 @@ def update_units() -> None:
 
 def save_units() -> None:
     """saves current unit data"""
-    with open("save.json", "w") as file:
+    with open(SAVE_FILE, "w") as file:
         json.dump([[1 if unit.active else 0 for unit in _unit] for _unit in unit_array], file, indent = 2)
 
 def load_units() -> None:
     """loads saved unit data"""
     try:
-        with open("save.json") as file:
+        with open(SAVE_FILE) as file:
             unit_active_list = json.load(file)
         for y in UNIT_ARRAY_SQUARE_SIZE_RANGE:
             for x in UNIT_ARRAY_SQUARE_SIZE_RANGE:
