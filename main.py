@@ -10,8 +10,8 @@ from pygame import Vector2
 WINDOW_TITLE = "C.G.O.L"
 FPS = 60.0
 COLOR_BG = Color(64, 64, 64)
-COLOR_UNIT_INACTIVE = Color(0, 0, 0)
-COLOR_UNIT_ACTIVE = Color(255, 255, 255)
+UNIT_COLORS = [Color(0, 0, 0),
+               Color(255, 255, 255)]
 UNIT_ARRAY_SQUARE_SIZE = 50
 UNIT_SIZE = 14
 UNIT_BORDER_SPACE = 1
@@ -41,7 +41,7 @@ class Unit:
 
     def draw(self, surface: Surface) -> None:
         """draws the unit to the given surface at its position"""
-        color = COLOR_UNIT_ACTIVE if self.active else COLOR_UNIT_INACTIVE
+        color = UNIT_COLORS[1] if self.active else UNIT_COLORS[0]
         match draw_mode:
             case 0:
                 pygame.draw.rect(surface, color, (self.position, UNIT_SIZE_VECTOR))
@@ -140,6 +140,7 @@ dirty_array = []
 surface_size = (TOTAL_UNIT_SIZE_VECTOR * UNIT_ARRAY_SQUARE_SIZE) + Vector2(UNIT_BORDER_SPACE)
 draw_mode = 0
 input_shift = False
+color_swap = False
 
 # create surface
 pygame.init()
@@ -209,6 +210,14 @@ while running:
 
                         # clear screen
                         deactivate_all_units()
+
+                    case pygame.K_BACKQUOTE:
+
+                        # swap units color scheme
+                        _color_hold = UNIT_COLORS[0]
+                        UNIT_COLORS[0] = UNIT_COLORS[1]
+                        UNIT_COLORS[1] = _color_hold
+                        redraw_all()
 
                     # handle saving and loading slots with function keys
                     case pygame.K_F1:
