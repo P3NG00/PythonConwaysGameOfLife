@@ -169,7 +169,8 @@ while running:
                     case pygame.K_SPACE:
 
                         # step through one unit update
-                        update_units()
+                        if not simulating:
+                            update_units()
 
                     case pygame.K_RETURN | pygame.K_KP_ENTER:
 
