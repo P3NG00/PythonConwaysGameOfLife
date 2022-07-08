@@ -229,10 +229,10 @@ while running:
                         # toggle active state of selected unit
                         mouse_pos = pygame.mouse.get_pos()
                         mouse_pos = (int(mouse_pos[0] / TOTAL_UNIT_SIZE),
-                                        int(mouse_pos[1] / TOTAL_UNIT_SIZE))
+                                     int(mouse_pos[1] / TOTAL_UNIT_SIZE))
                         # check click was in bounds
                         if mouse_pos[0] < UNIT_ARRAY_SQUARE_SIZE and \
-                            mouse_pos[1] < UNIT_ARRAY_SQUARE_SIZE:
+                           mouse_pos[1] < UNIT_ARRAY_SQUARE_SIZE:
                             # find selected unity, modify active state, and add to dirty list
                             mouse_unit = unit_array[mouse_pos[1]][mouse_pos[0]]
                             mouse_unit.active = not mouse_unit.active
