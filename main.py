@@ -107,7 +107,7 @@ def update_units() -> None:
 # variables
 running = True
 simulating = False
-simulation_timer = SIMULATION_TIMER_FRAMES
+simulation_timer = 0
 unit_array = [[Unit(Vector2((x * TOTAL_UNIT_SIZE) + UNIT_BORDER_SPACE,
                             (y * TOTAL_UNIT_SIZE) + UNIT_BORDER_SPACE))
                              for x in UNIT_ARRAY_SQUARE_SIZE_RANGE]
@@ -115,6 +115,7 @@ unit_array = [[Unit(Vector2((x * TOTAL_UNIT_SIZE) + UNIT_BORDER_SPACE,
 dirty_array = []
 surface_size = (TOTAL_UNIT_SIZE_VECTOR * UNIT_ARRAY_SQUARE_SIZE) + Vector2(UNIT_BORDER_SPACE)
 draw_mode = 0
+input_shift = False
 
 # create surface
 pygame.init()
@@ -159,16 +160,35 @@ while running:
 
                         # toggle simulation
                         simulating = not simulating
-                        if not simulating:
-                            simulation_timer = SIMULATION_TIMER_FRAMES
+                        simulation_timer = 0
 
                     case pygame.K_F1:
 
                         # toggle draw mode
-                        draw_mode += 1
-                        if draw_mode == 3:
-                            draw_mode = 0
+                        if input_shift:
+                            draw_mode -= 1
+                            if draw_mode == -1:
+                                draw_mode = 2
+                        else:
+                            draw_mode += 1
+                            if draw_mode == 3:
+                                draw_mode = 0
+                        # redraw all units
                         redraw_all()
+
+                    case pygame.K_LSHIFT | pygame.K_RSHIFT:
+
+                        # mark shift as held
+                        input_shift = True
+
+            case pygame.KEYUP:
+
+                match event.key:
+
+                    case pygame.K_LSHIFT | pygame.K_RSHIFT:
+
+                        # mark shift as released
+                        input_shift = False
 
             case pygame.MOUSEBUTTONDOWN:
 
@@ -189,7 +209,6 @@ while running:
                                 mouse_unit.active = not mouse_unit.active
                                 dirty_array.append(mouse_unit)
 
-    # TODO reimplement
     # check if handling simulation
     if simulating:
 
@@ -197,7 +216,7 @@ while running:
         simulation_timer -= 1
 
         # check if next simulation update
-        if simulation_timer == 0:
+        if simulation_timer == -1:
 
             # reset timer and handle step
             simulation_timer = SIMULATION_TIMER_FRAMES
