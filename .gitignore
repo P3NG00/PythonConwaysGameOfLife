@@ -1,4 +1,4 @@
 .git/
 .venv/
 IDEAS.txt
-save.json
+save_*.json

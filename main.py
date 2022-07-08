@@ -12,7 +12,6 @@ FPS = 60.0
 COLOR_BG = Color(64, 64, 64)
 COLOR_UNIT_INACTIVE = Color(0, 0, 0)
 COLOR_UNIT_ACTIVE = Color(255, 255, 255)
-SAVE_FILE = "save.json"
 UNIT_ARRAY_SQUARE_SIZE = 50
 UNIT_SIZE = 14
 UNIT_BORDER_SPACE = 1
@@ -99,27 +98,26 @@ def update_units() -> None:
                     unit.active = True
                     dirty_array.append(unit)
 
-def save_units() -> None:
-    """saves current unit data"""
-    with open(SAVE_FILE, "w") as file:
-        json.dump([[1 if unit.active else 0 for unit in _unit] for _unit in unit_array], file, indent = 2)
-
-def load_units() -> None:
-    """loads saved unit data"""
-    try:
-        with open(SAVE_FILE) as file:
-            unit_active_list = json.load(file)
-        for y in UNIT_ARRAY_SQUARE_SIZE_RANGE:
-            for x in UNIT_ARRAY_SQUARE_SIZE_RANGE:
-                unit = unit_array[y][x]
-                unit_active = unit_active_list[y][x] == 1
-                unit.active = unit_active
-                unit.active_last = unit_active
-        global simulating
-        simulating = False
-        redraw_all()
-    except:
-        pass
+def handle_slot(slot: int) -> None:
+    save_name = f"save_{slot}.json"
+    if input_shift:
+        with open(save_name, "w") as file:
+            json.dump([[1 if unit.active else 0 for unit in _unit] for _unit in unit_array], file, indent = 2)
+    else:
+        try:
+            with open(save_name) as file:
+                unit_active_list = json.load(file)
+            for y in UNIT_ARRAY_SQUARE_SIZE_RANGE:
+                for x in UNIT_ARRAY_SQUARE_SIZE_RANGE:
+                    unit = unit_array[y][x]
+                    unit_active = unit_active_list[y][x] == 1
+                    unit.active = unit_active
+                    unit.active_last = unit_active
+            global simulating
+            simulating = False
+            redraw_all()
+        except:
+            pass
 
 
 # variables
@@ -197,13 +195,31 @@ while running:
                         # mark shift as held
                         input_shift = True
 
+                    # handle saving and loading slots with function keys
                     case pygame.K_F1:
-
-                        # shift+f1 to save, f1 to load
-                        if input_shift:
-                            save_units()
-                        else:
-                            load_units()
+                        handle_slot(1)
+                    case pygame.K_F2:
+                        handle_slot(2)
+                    case pygame.K_F3:
+                        handle_slot(3)
+                    case pygame.K_F4:
+                        handle_slot(4)
+                    case pygame.K_F5:
+                        handle_slot(5)
+                    case pygame.K_F6:
+                        handle_slot(6)
+                    case pygame.K_F7:
+                        handle_slot(7)
+                    case pygame.K_F8:
+                        handle_slot(8)
+                    case pygame.K_F9:
+                        handle_slot(9)
+                    case pygame.K_F10:
+                        handle_slot(10)
+                    case pygame.K_F11:
+                        handle_slot(11)
+                    case pygame.K_F12:
+                        handle_slot(12)
 
             case pygame.KEYUP:
 
