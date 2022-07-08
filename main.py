@@ -31,7 +31,6 @@ UNIT_ARRAY_SQUARE_SIZE_RANGE = range(UNIT_ARRAY_SQUARE_SIZE)
 SIMULATION_TIMER_FRAMES = seconds_to_frames(SIMULATION_TIMER_SECONDS)
 TOTAL_UNIT_SIZE = UNIT_SIZE + UNIT_BORDER_SPACE
 TOTAL_UNIT_SIZE_VECTOR = Vector2(TOTAL_UNIT_SIZE)
-TOTAL_UNIT_SIZE_VECTOR_HALF = TOTAL_UNIT_SIZE_VECTOR / 2
 
 
 class Unit:
@@ -43,22 +42,17 @@ class Unit:
 
     def draw(self, surface: Surface) -> None:
         """draws the unit to the given surface at its position"""
-        if draw_mode:
-            pygame.draw.rect(surface, self._get_color(), (self.position, self._get_size()))
-        else:
-            pygame.draw.circle(surface, self._get_color(), self.position + self._get_size_half(), UNIT_SIZE_HALF)
+        match draw_mode:
+            case 0:
+                pygame.draw.rect(surface, self._get_color(), (self.position, UNIT_SIZE_VECTOR))
+            case 1:
+                pygame.draw.rect(surface, self._get_color(), (self.position, TOTAL_UNIT_SIZE_VECTOR))
+            case 2:
+                pygame.draw.circle(surface, self._get_color(), self.position + UNIT_SIZE_VECTOR_HALF, UNIT_SIZE_HALF)
 
     def _get_color(self) -> Color:
         """returns the appropriate color for this unit's active state"""
         return COLOR_UNIT_ACTIVE if self.active else COLOR_UNIT_INACTIVE
-
-    def _get_size(self) -> Vector2:
-        """returns the appropriate size vector for the current simulation state"""
-        return TOTAL_UNIT_SIZE_VECTOR if simulating else UNIT_SIZE_VECTOR
-
-    def _get_size_half(self) -> Vector2:
-        """returns the appropriate half size vector for the current simulation state"""
-        return TOTAL_UNIT_SIZE_VECTOR_HALF if simulating else UNIT_SIZE_VECTOR_HALF
 
 
 def redraw_all() -> None:
@@ -120,7 +114,7 @@ unit_array = [[Unit(Vector2((x * TOTAL_UNIT_SIZE) + UNIT_BORDER_SPACE,
                              for y in UNIT_ARRAY_SQUARE_SIZE_RANGE]
 dirty_array = []
 surface_size = (TOTAL_UNIT_SIZE_VECTOR * UNIT_ARRAY_SQUARE_SIZE) + Vector2(UNIT_BORDER_SPACE)
-draw_mode = True
+draw_mode = 0
 
 # create surface
 pygame.init()
@@ -158,18 +152,22 @@ while running:
 
                     case pygame.K_SPACE:
 
-                        # TODO move to new keybind
-                        # toggle simulation
-                        # simulating = not simulating
-                        # if not simulating:
-                        #     simulation_timer = SIMULATION_TIMER_FRAMES
-                        # redraw_all()
+                        # step through one unit update
                         update_units()
+
+                    case pygame.K_RETURN:
+
+                        # toggle simulation
+                        simulating = not simulating
+                        if not simulating:
+                            simulation_timer = SIMULATION_TIMER_FRAMES
 
                     case pygame.K_F1:
 
                         # toggle draw mode
-                        draw_mode = not draw_mode
+                        draw_mode += 1
+                        if draw_mode == 3:
+                            draw_mode = 0
                         redraw_all()
 
             case pygame.MOUSEBUTTONDOWN:
