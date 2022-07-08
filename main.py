@@ -42,17 +42,14 @@ class Unit:
 
     def draw(self, surface: Surface) -> None:
         """draws the unit to the given surface at its position"""
+        color = COLOR_UNIT_ACTIVE if self.active else COLOR_UNIT_INACTIVE
         match draw_mode:
             case 0:
-                pygame.draw.rect(surface, self._get_color(), (self.position, UNIT_SIZE_VECTOR))
+                pygame.draw.rect(surface, color, (self.position, UNIT_SIZE_VECTOR))
             case 1:
-                pygame.draw.rect(surface, self._get_color(), (self.position, TOTAL_UNIT_SIZE_VECTOR))
+                pygame.draw.rect(surface, color, (self.position, TOTAL_UNIT_SIZE_VECTOR))
             case 2:
-                pygame.draw.circle(surface, self._get_color(), self.position + UNIT_SIZE_VECTOR_HALF, UNIT_SIZE_HALF)
-
-    def _get_color(self) -> Color:
-        """returns the appropriate color for this unit's active state"""
-        return COLOR_UNIT_ACTIVE if self.active else COLOR_UNIT_INACTIVE
+                pygame.draw.circle(surface, color, self.position + UNIT_SIZE_VECTOR_HALF, UNIT_SIZE_HALF)
 
 
 def redraw_all() -> None:
