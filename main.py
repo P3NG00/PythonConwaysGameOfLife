@@ -158,7 +158,7 @@ while running:
                         simulating = not simulating
                         simulation_timer = 0
 
-                    case pygame.K_F1:
+                    case pygame.K_TAB:
 
                         # toggle draw mode
                         if input_shift:
