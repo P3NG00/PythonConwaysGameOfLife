@@ -57,7 +57,6 @@ class Unit:
 
 def redraw_all() -> None:
     """clears screen and adds all units to dirty_array to be redrawn"""
-    global dirty_array
     # refill surface
     surface.fill(COLOR_BG)
     # mark all units dirty
