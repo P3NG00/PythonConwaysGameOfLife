@@ -44,16 +44,21 @@ class Unit:
     def draw(self, surface: Surface) -> None:
         """draws the unit to the given surface at its position"""
         if draw_mode:
-            pygame.draw.rect(surface, self._get_color(), (self.position,
-                             TOTAL_UNIT_SIZE_VECTOR if simulating else UNIT_SIZE_VECTOR))
+            pygame.draw.rect(surface, self._get_color(), (self.position, self._get_size()))
         else:
-            pygame.draw.circle(surface, self._get_color(), self.position +
-                              (TOTAL_UNIT_SIZE_VECTOR_HALF if simulating else
-                               UNIT_SIZE_VECTOR_HALF), UNIT_SIZE_HALF)
+            pygame.draw.circle(surface, self._get_color(), self.position + self._get_size_half(), UNIT_SIZE_HALF)
 
     def _get_color(self) -> Color:
         """returns the appropriate color for this unit's active state"""
         return COLOR_UNIT_ACTIVE if self.active else COLOR_UNIT_INACTIVE
+
+    def _get_size(self) -> Vector2:
+        """returns the appropriate size vector for the current simulation state"""
+        return TOTAL_UNIT_SIZE_VECTOR if simulating else UNIT_SIZE_VECTOR
+
+    def _get_size_half(self) -> Vector2:
+        """returns the appropriate half size vector for the current simulation state"""
+        return TOTAL_UNIT_SIZE_VECTOR_HALF if simulating else UNIT_SIZE_VECTOR_HALF
 
 
 def redraw_all() -> None:
