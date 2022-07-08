@@ -98,7 +98,16 @@ def update_units() -> None:
                     unit.active = True
                     dirty_array.append(unit)
 
+def deactivate_all_units() -> None:
+    """iterates through and deactivates all units"""
+    for _unit in unit_array:
+        for unit in _unit:
+            unit.active = False
+            unit.active_last = False
+    redraw_all()
+
 def handle_slot(slot: int) -> None:
+    """handles saving/loading to a file"""
     save_name = f"save_{slot}.json"
     if input_shift:
         with open(save_name, "w") as file:
@@ -117,7 +126,7 @@ def handle_slot(slot: int) -> None:
             simulating = False
             redraw_all()
         except:
-            pass
+            deactivate_all_units()
 
 
 # variables
@@ -195,6 +204,11 @@ while running:
 
                         # mark shift as held
                         input_shift = True
+
+                    case pygame.K_ESCAPE:
+
+                        # clear screen
+                        deactivate_all_units()
 
                     # handle saving and loading slots with function keys
                     case pygame.K_F1:
