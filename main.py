@@ -8,12 +8,11 @@ from pygame import Vector2
 
 # changable constants
 WINDOW_TITLE = "C.G.O.L"
-FPS = 65.0
+FPS = 60.0
 COLOR_BG = Color(64, 64, 64)
 COLOR_UNIT_INACTIVE = Color(0, 0, 0)
 COLOR_UNIT_ACTIVE = Color(255, 255, 255)
 SAVE_FILE = "save.json"
-SIMULATION_TIMER_SECONDS = 0.25
 UNIT_ARRAY_SQUARE_SIZE = 50
 UNIT_SIZE = 14
 UNIT_BORDER_SPACE = 1
@@ -30,7 +29,6 @@ UNIT_SIZE_HALF = math.ceil(UNIT_SIZE / 2)
 UNIT_SIZE_VECTOR = Vector2(UNIT_SIZE)
 UNIT_SIZE_VECTOR_HALF = UNIT_SIZE_VECTOR / 2
 UNIT_ARRAY_SQUARE_SIZE_RANGE = range(UNIT_ARRAY_SQUARE_SIZE)
-SIMULATION_TIMER_FRAMES = seconds_to_frames(SIMULATION_TIMER_SECONDS)
 TOTAL_UNIT_SIZE = UNIT_SIZE + UNIT_BORDER_SPACE
 TOTAL_UNIT_SIZE_VECTOR = Vector2(TOTAL_UNIT_SIZE)
 
@@ -127,7 +125,6 @@ def load_units() -> None:
 # variables
 running = True
 simulating = False
-simulation_timer = 0
 unit_array = [[Unit(Vector2((x * TOTAL_UNIT_SIZE) + UNIT_BORDER_SPACE,
                             (y * TOTAL_UNIT_SIZE) + UNIT_BORDER_SPACE))
                              for x in UNIT_ARRAY_SQUARE_SIZE_RANGE]
@@ -180,7 +177,6 @@ while running:
 
                         # toggle simulation
                         simulating = not simulating
-                        simulation_timer = 0
 
                     case pygame.K_TAB:
 
@@ -239,18 +235,9 @@ while running:
                             mouse_unit.active = not mouse_unit.active
                             dirty_array.append(mouse_unit)
 
-    # check if handling simulation
+    # update units if simulating
     if simulating:
-
-        # decrease simulation_timer
-        simulation_timer -= 1
-
-        # check if next simulation update
-        if simulation_timer == -1:
-
-            # reset timer and handle step
-            simulation_timer = SIMULATION_TIMER_FRAMES
-            update_units()
+        update_units()
 
     # draw
     if len(dirty_array) != 0:
