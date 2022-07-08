@@ -72,6 +72,43 @@ def redraw_all() -> None:
         for unit in _unit:
             dirty_array.append(unit)
 
+def update_units() -> None:
+    """handles updating all units"""
+    for y in UNIT_ARRAY_SQUARE_SIZE_RANGE:
+        for x in UNIT_ARRAY_SQUARE_SIZE_RANGE:
+            # check for neighbors
+            unit_neighbors = 0
+            for offset_y in range(3):
+                for offset_x in range(3):
+                    # skip check if offset is centered
+                    if offset_x == 1 and offset_y == 1:
+                        continue
+                    # neighbor coordinates
+                    check_x = x + (offset_x - 1)
+                    check_y = y + (offset_y - 1)
+                    # skip check if check if out of bounds
+                    if check_x < 0 or check_y < 0 or \
+                       check_x > UNIT_ARRAY_SQUARE_SIZE - 1 or \
+                       check_y > UNIT_ARRAY_SQUARE_SIZE - 1:
+                        continue
+                    # if unit at check position was active, increment neighbor count
+                    if unit_array[check_y][check_x].active_last:
+                        unit_neighbors += 1
+            # get current unit
+            unit = unit_array[y][x]
+            # if unit is active and has too few or too many neighbors
+            if unit.active:
+                if unit_neighbors < 2 or unit_neighbors > 3:
+                    # make unit inactive
+                    unit.active = False
+                    dirty_array.append(unit)
+            # if unit is not active and has exactly three neighbors
+            else:
+                if unit_neighbors == 3:
+                    # make unit active
+                    unit.active = True
+                    dirty_array.append(unit)
+
 
 # variables
 running = True
@@ -121,11 +158,13 @@ while running:
 
                     case pygame.K_SPACE:
 
+                        # TODO move to new keybind
                         # toggle simulation
-                        simulating = not simulating
-                        if not simulating:
-                            simulation_timer = SIMULATION_TIMER_FRAMES
-                        redraw_all()
+                        # simulating = not simulating
+                        # if not simulating:
+                        #     simulation_timer = SIMULATION_TIMER_FRAMES
+                        # redraw_all()
+                        update_units()
 
                     case pygame.K_F1:
 
@@ -152,6 +191,7 @@ while running:
                                 mouse_unit.active = not mouse_unit.active
                                 dirty_array.append(mouse_unit)
 
+    # TODO reimplement
     # check if handling simulation
     if simulating:
 
@@ -161,41 +201,9 @@ while running:
         # check if next simulation update
         if simulation_timer == 0:
 
-            # reset timer
+            # reset timer and handle step
             simulation_timer = SIMULATION_TIMER_FRAMES
-
-            # update each unit
-            for y in UNIT_ARRAY_SQUARE_SIZE_RANGE:
-                for x in UNIT_ARRAY_SQUARE_SIZE_RANGE:
-                    # check for neighbors
-                    unit_neighbors = 0
-                    for offset_y in range(3):
-                        for offset_x in range(3):
-                            check_x = x + (offset_x - 1)
-                            check_y = y + (offset_y - 1)
-                            # skip check if centered or out of bounds
-                            if (offset_x == 1 and offset_y == 1) or \
-                               check_x < 0 or \
-                               check_y < 0 or \
-                               check_x > UNIT_ARRAY_SQUARE_SIZE - 1 or \
-                               check_y > UNIT_ARRAY_SQUARE_SIZE - 1:
-                                continue
-                            # if unit was active, increment neighbors
-                            if unit_array[check_y][check_x].active_last:
-                                unit_neighbors += 1
-                    unit = unit_array[y][x]
-                    # if unit is active and has too few or too many neighbors
-                    if unit.active:
-                        if unit_neighbors < 2 or unit_neighbors > 3:
-                            # make unit inactive
-                            unit.active = False
-                            dirty_array.append(unit)
-                    # if unit is not active and has exactly three neighbors
-                    else:
-                        if unit_neighbors == 3:
-                            # make unit active
-                            unit.active = True
-                            dirty_array.append(unit)
+            update_units()
 
     # draw
     if len(dirty_array) != 0:
