@@ -12,9 +12,9 @@ FPS = 60.0
 COLOR_BG = Color(64, 64, 64)
 UNIT_COLORS = [Color(0, 0, 0),
                Color(255, 255, 255)]
-UNIT_ARRAY_SQUARE_SIZE = 50
+UNIT_ARRAY_SIZE = (50, 50)
 UNIT_SIZE = 14
-UNIT_BORDER_SPACE = 1
+UNIT_BORDER = 1
 
 
 def seconds_to_frames(seconds: float) -> int:
@@ -27,8 +27,10 @@ CLOCK = pygame.time.Clock()
 UNIT_SIZE_HALF = math.ceil(UNIT_SIZE / 2)
 UNIT_SIZE_VECTOR = Vector2(UNIT_SIZE)
 UNIT_SIZE_VECTOR_HALF = UNIT_SIZE_VECTOR / 2
-UNIT_ARRAY_SQUARE_SIZE_RANGE = range(UNIT_ARRAY_SQUARE_SIZE)
-TOTAL_UNIT_SIZE = UNIT_SIZE + UNIT_BORDER_SPACE
+UNIT_ARRAY_SIZE_RANGE = (range(UNIT_ARRAY_SIZE[0]),
+                         range(UNIT_ARRAY_SIZE[1]))
+UNIT_BORDER_VECTOR = Vector2(UNIT_BORDER)
+TOTAL_UNIT_SIZE = UNIT_SIZE + UNIT_BORDER
 TOTAL_UNIT_SIZE_VECTOR = Vector2(TOTAL_UNIT_SIZE)
 
 
@@ -63,8 +65,8 @@ def redraw_all() -> None:
 
 def update_units() -> None:
     """handles updating all units"""
-    for y in UNIT_ARRAY_SQUARE_SIZE_RANGE:
-        for x in UNIT_ARRAY_SQUARE_SIZE_RANGE:
+    for y in UNIT_ARRAY_SIZE_RANGE[1]:
+        for x in UNIT_ARRAY_SIZE_RANGE[0]:
             # check for neighbors
             unit_neighbors = 0
             for offset_y in range(3):
@@ -77,8 +79,8 @@ def update_units() -> None:
                     check_y = y + (offset_y - 1)
                     # skip check if check if out of bounds
                     if check_x < 0 or check_y < 0 or \
-                       check_x > UNIT_ARRAY_SQUARE_SIZE - 1 or \
-                       check_y > UNIT_ARRAY_SQUARE_SIZE - 1:
+                       check_x > UNIT_ARRAY_SIZE[0] - 1 or \
+                       check_y > UNIT_ARRAY_SIZE[1] - 1:
                         continue
                     # if unit at check position was active, increment neighbor count
                     if unit_array[check_y][check_x].active_last:
@@ -109,19 +111,25 @@ def deactivate_all_units() -> None:
 def handle_slot(slot: int) -> None:
     """handles saving/loading to a file"""
     save_name = f"save_{slot}.json"
+    # if holding shift, save to slot
     if input_shift:
         with open(save_name, "w") as file:
             json.dump([[1 if unit.active else 0 for unit in _unit] for _unit in unit_array], file, indent = 2)
+    # if not holding shift, load slot
     else:
         try:
             with open(save_name) as file:
                 unit_active_list = json.load(file)
-            for y in UNIT_ARRAY_SQUARE_SIZE_RANGE:
-                for x in UNIT_ARRAY_SQUARE_SIZE_RANGE:
+            for y in UNIT_ARRAY_SIZE_RANGE[1]:
+                for x in UNIT_ARRAY_SIZE_RANGE[0]:
                     unit = unit_array[y][x]
-                    unit_active = unit_active_list[y][x] == 1
-                    unit.active = unit_active
-                    unit.active_last = unit_active
+                    try:
+                        unit_active = unit_active_list[y][x] == 1
+                        unit.active = unit_active
+                        unit.active_last = unit_active
+                    except:
+                        unit.active = False
+                        unit.active_last = False
             global simulating
             simulating = False
             redraw_all()
@@ -132,12 +140,15 @@ def handle_slot(slot: int) -> None:
 # variables
 running = True
 simulating = False
-unit_array = [[Unit(Vector2((x * TOTAL_UNIT_SIZE) + UNIT_BORDER_SPACE,
-                            (y * TOTAL_UNIT_SIZE) + UNIT_BORDER_SPACE))
-                             for x in UNIT_ARRAY_SQUARE_SIZE_RANGE]
-                             for y in UNIT_ARRAY_SQUARE_SIZE_RANGE]
+unit_array = [[Unit(Vector2((x * TOTAL_UNIT_SIZE) + UNIT_BORDER,
+                            (y * TOTAL_UNIT_SIZE) + UNIT_BORDER))
+                             for x in UNIT_ARRAY_SIZE_RANGE[0]]
+                             for y in UNIT_ARRAY_SIZE_RANGE[1]]
 dirty_array = []
-surface_size = (TOTAL_UNIT_SIZE_VECTOR * UNIT_ARRAY_SQUARE_SIZE) + Vector2(UNIT_BORDER_SPACE)
+surface_size = TOTAL_UNIT_SIZE_VECTOR.copy()
+surface_size.x *= UNIT_ARRAY_SIZE[0]
+surface_size.y *= UNIT_ARRAY_SIZE[1]
+surface_size += Vector2(UNIT_BORDER)
 draw_mode = 0
 input_shift = False
 color_swap = False
@@ -268,8 +279,8 @@ while running:
                         mouse_pos = (int(mouse_pos[0] / TOTAL_UNIT_SIZE),
                                      int(mouse_pos[1] / TOTAL_UNIT_SIZE))
                         # check click was in bounds
-                        if mouse_pos[0] < UNIT_ARRAY_SQUARE_SIZE and \
-                           mouse_pos[1] < UNIT_ARRAY_SQUARE_SIZE:
+                        if mouse_pos[0] < UNIT_ARRAY_SIZE[0] and \
+                           mouse_pos[1] < UNIT_ARRAY_SIZE[1]:
                             # find selected unity, modify active state, and add to dirty list
                             mouse_unit = unit_array[mouse_pos[1]][mouse_pos[0]]
                             mouse_unit.active = not mouse_unit.active
