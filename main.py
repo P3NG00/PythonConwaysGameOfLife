@@ -6,8 +6,8 @@ from pygame import Surface
 from pygame import Vector2
 
 
-# changable constants
-WINDOW_TITLE = "C.G.O.L"
+# changeable constants
+WINDOW_TITLE = "C.G.o.L"
 FPS = 60.0
 COLOR_BG = Color(64, 64, 64)
 UNIT_COLORS = [Color(0, 0, 0),
@@ -63,6 +63,7 @@ def redraw_all() -> None:
         for unit in _unit:
             dirty_array.append(unit)
 
+
 def update_units() -> None:
     """handles updating all units"""
     for y in UNIT_ARRAY_SIZE_RANGE[1]:
@@ -77,7 +78,7 @@ def update_units() -> None:
                     # neighbor coordinates
                     check_x = x + (offset_x - 1)
                     check_y = y + (offset_y - 1)
-                    # skip check if check if out of bounds
+                    # skip check if out of bounds
                     if check_x < 0 or check_y < 0 or \
                        check_x > UNIT_ARRAY_SIZE[0] - 1 or \
                        check_y > UNIT_ARRAY_SIZE[1] - 1:
@@ -100,6 +101,7 @@ def update_units() -> None:
                     unit.active = True
                     dirty_array.append(unit)
 
+
 def deactivate_all_units() -> None:
     """iterates through and deactivates all units"""
     for _unit in unit_array:
@@ -107,6 +109,7 @@ def deactivate_all_units() -> None:
             unit.active = False
             unit.active_last = False
     redraw_all()
+
 
 def handle_slot(slot: int) -> None:
     """handles saving/loading to a file"""
