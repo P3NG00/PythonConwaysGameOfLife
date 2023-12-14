@@ -1,5 +1,9 @@
 # [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in Python
 
+[Rules are listed in the Wikipedia article](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Rules).
+
+This repo include an example file. While the script is running press F1 to load then press Enter to watch it run!
+
 ### Controls
 
 | Key          | Action                 |
